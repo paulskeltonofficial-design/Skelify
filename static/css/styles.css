@@ -1,118 +1,74 @@
-cat > static/css/styles.css <<'CSS'
-:root {
-  --bg: #0e1117;
-  --card: #1b1f2b;
-  --text: #f0f3f7;
-  --accent: #34d399;
-  --muted: #9aa4b2;
-}
-
 body {
-  background: linear-gradient(-45deg, #0e1117, #1b1f2b, #0b3d2e, #16213e);
-  background-size: 400% 400%;
-  animation: gradientShift 20s ease infinite;
-  color: var(--text);
-  font-family: Inter, system-ui, Segoe UI, Roboto, Arial;
-  margin: 0;
-  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(circle at 20% 20%, #000, #111, #050505);
+  color: #fff;
   text-align: center;
-  opacity: 0;
-  transition: opacity 1.2s ease-in;
-}
-body.loaded {
-  opacity: 1;
+  padding: 2rem;
+  overflow-x: hidden;
+  animation: fadein 2s ease;
 }
 
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* Header + logo */
-.header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 40px;
-  text-align: center;
+.header .logo {
+  width: 130px;
+  margin-bottom: 10px;
+  animation: glow 2s infinite alternate;
 }
 
-.logo {
-  width: 150px;
-  max-width: 80%;
-  margin-bottom: 12px;
-  filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.8));
-  animation: logoGlow 5s ease-in-out infinite;
-}
-
-@keyframes logoGlow {
-  0%, 100% { filter: drop-shadow(0 0 8px rgba(52, 211, 153, 0.6)); }
-  50% { filter: drop-shadow(0 0 25px rgba(16, 185, 129, 0.9)); }
+@keyframes glow {
+  from { filter: drop-shadow(0 0 10px #00ffc8); }
+  to { filter: drop-shadow(0 0 25px #ff00ff); }
 }
 
 h1 {
-  font-weight: 700;
-  font-size: 2.4rem;
-  margin: 0;
+  font-size: 2.5rem;
+  color: #fff;
+  text-shadow: 0 0 10px #00ffc8, 0 0 20px #00ffc8;
+  margin-bottom: 0;
 }
 
 .subtitle {
-  color: var(--muted);
+  color: #aaa;
   font-size: 1rem;
-  margin-top: 4px;
-  letter-spacing: 0.5px;
+  margin-bottom: 2rem;
 }
 
-/* Song cards */
 .song {
-  background: var(--card);
-  border-radius: 16px;
-  padding: 16px;
-  margin: 16px auto;
-  max-width: 600px;
-  box-shadow: 0 4px 18px rgba(0,0,0,.25);
-  transition: transform .2s ease, box-shadow .2s ease;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 15px auto;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+  transition: transform 0.3s ease;
 }
+
 .song:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.35);
+  transform: scale(1.03);
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.4);
 }
 
-.meta { margin-bottom: 8px; }
-.title { font-weight: 600; font-size: 1.1rem; }
-.artist { color: var(--muted); font-size: .95rem; }
+audio {
+  width: 100%;
+  margin-top: 10px;
+  filter: drop-shadow(0 0 10px #00ffc8);
+}
 
-audio { width: 100%; margin-top: 6px; }
+.plays {
+  color: #00ffc8;
+  font-size: 0.9rem;
+}
 
-/* Footer + toggle */
-.footer {
+footer {
   margin-top: 40px;
-  font-size: .9rem;
-  color: var(--muted);
-}
-.toggle {
-  position: fixed;
-  top: 12px;
-  right: 12px;
-  background: var(--card);
-  color: var(--text);
-  border: none;
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
-  font-size: 1.2rem;
-  cursor: pointer;
+  color: #888;
+  font-size: 0.9rem;
 }
 
-/* Light mode */
-body.light {
-  --bg: #fafafa;
-  --card: #fff;
-  --text: #111;
-  --muted: #555;
-}
-CSS
 
 
