@@ -74,4 +74,14 @@ def index():
     return render_template_string(html, songs=load_songs())
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5001)
+    # Render requires host=0.0.0.0 and dynamic port assignment
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
+
+
+
+
+
+
+
+
