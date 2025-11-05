@@ -1,0 +1,49 @@
+nano app.pyfrom flask import Flask, render_template_string import os
+python3 app.py
+
+app = Flask(__name__)
+
+def load_songs():
+    songs = []
+    for f in sorted(os.listdir("static")):
+        if f.lower().endswith(".mp3"):
+            title = os.path.splitext(f)[0]
+            songs.append({"title": title, "artist": "Reviver", "url": f"/static/{f}"})
+    return songs
+
+@app.route("/")
+def index():
+    @app.route('/')
+def index():
+    html = """
+    <html>
+    <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Reviver — Label Player</title>
+      <link rel="stylesheet" href="/static/css/styles.css">
+    </head>
+    <body>
+      <div class="wrap">
+        <h1>Reviver — Label Player</h1>
+        {% for song in songs %}
+          <div class="song">
+            <div class="meta">
+              <div class="title">{{ song.title }}</div>
+              <div class="artist">{{ song.artist }}</div>
+            </div>
+            <audio controls preload="metadata">
+              <source src="{{ song.url }}" type="audio/mpeg">
+            </audio>
+          </div>
+        {% endfor %}
+      </div>
+    </body>
+    </html>
+    """
+    return render_template_string(html, songs=songs)
+
+  
+    
+
+if __name__ == "__main__":
+    app.run(debug=True, port=5001)
