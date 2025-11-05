@@ -1,8 +1,33 @@
-from flask import Flask, render_template_string
-import os
+from flask import Flask, render_template_string, request, jsonify
+import os, sqlite3
 
 app = Flask(__name__)
 
+DB_PATH = "plays.db"
+
+# ---------- Database setup ----------
+def init_db():
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(
+            "CREATE TABLE IF NOT EXISTS plays (title TEXT PRIMARY KEY, count INTEGER DEFAULT 0)"
+        )
+
+def get_play_count(title):
+    with sqlite3.connect(DB_PATH) as conn:
+        cur = conn.execute("SELECT count FROM plays WHERE title=?", (title,))
+        row = cur.fetchone()
+        return row[0] if row else 0
+
+def add_play(title):
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(
+            "INSERT INTO plays (title, count) VALUES (?,1) "
+            "ON CONFLICT(title) DO UPDATE SET count=count+1;",
+            (title,),
+        )
+        conn.commit()
+
+# ---------- Song loader ----------
 def load_songs():
     songs = []
     for f in sorted(os.listdir("static")):
@@ -11,10 +36,12 @@ def load_songs():
             songs.append({
                 "title": title,
                 "artist": "Revivor Records",
-                "url": f"/static/{f}"
+                "url": f"/static/{f}",
+                "plays": get_play_count(title)
             })
     return songs
 
+# ---------- Routes ----------
 @app.route("/")
 def index():
     html = """
@@ -24,7 +51,6 @@ def index():
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <title>Skelify — Powered by Revivor Records</title>
       <link rel="stylesheet" href="/static/css/styles.css">
-      <link rel="icon" href="/static/icons/favicon.png" type="image/png">
     </head>
     <body>
       <div class="wrap">
@@ -36,14 +62,12 @@ def index():
 
         {% for song in songs %}
           <div class="song">
-            <div class="cover">
-              <img src="/static/images/{{ song.title }}.jpg" alt="cover art" onerror="this.style.display='none'">
-            </div>
             <div class="meta">
               <div class="title">{{ song.title }}</div>
               <div class="artist">{{ song.artist }}</div>
+              <div class="plays">▶️ {{ song.plays }} plays</div>
             </div>
-            <audio controls preload="metadata">
+            <audio controls preload="metadata" onplay="countPlay('{{ song.title }}')">
               <source src="{{ song.url }}" type="audio/mpeg">
             </audio>
           </div>
@@ -54,30 +78,24 @@ def index():
         </footer>
       </div>
 
-      <button id="themeToggle" class="toggle">☀️/🌙</button>
-
       <script>
-        // Theme toggle
-        const btn = document.getElementById('themeToggle');
-        btn.addEventListener('click', () => {
-          document.body.classList.toggle('light');
-        });
-
-        // Fade-in animation
-        document.addEventListener("DOMContentLoaded", () => {
-          document.body.classList.add('loaded');
-        });
+        async function countPlay(title){
+          await fetch("/play/" + encodeURIComponent(title), {method:"POST"});
+        }
       </script>
     </body>
     </html>
     """
     return render_template_string(html, songs=load_songs())
 
+@app.route("/play/<title>", methods=["POST"])
+def play(title):
+    add_play(title)
+    return jsonify(success=True, plays=get_play_count(title))
+
 if __name__ == "__main__":
-    # Render requires host=0.0.0.0 and dynamic port assignment
+    init_db()
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-
-
 
 
 
